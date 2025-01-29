@@ -9,7 +9,7 @@ import UIKit
 import SwiftUI
 
 class ImageService {
-    func getImage(url: URL?) async throws -> Image {
+    func getImage(url: URL?) async throws -> UIImage {
         do {
             guard let url = url else {
                 throw APIErrors.invalidURL
@@ -22,7 +22,7 @@ class ImageService {
             }
             
             if let uiImage = UIImage(data: data) {
-                return Image(uiImage: uiImage)
+                return uiImage
             } else {
                 throw APIErrors.decodingError(NSError(domain: "Image Error", code: 0, userInfo: nil))
             }

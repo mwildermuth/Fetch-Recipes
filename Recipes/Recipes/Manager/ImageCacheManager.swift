@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SwiftUI
 
 @globalActor actor ImageCacheManager {
     static let shared = ImageCacheManager()
@@ -30,7 +31,13 @@ import UIKit
         }
     }
     
-    func storeImage(url: URL, image: UIImage) async {
+    func storeImage(url: URL?, image: UIImage) async {
+        
+        guard let url = url else {
+            print("URL not found")
+            return
+        }
+        
         guard let cachePath = cachePath else {
             print("Cache path not found")
             return
@@ -49,7 +56,12 @@ import UIKit
         }
     }
     
-    func retrieveImage(url: URL) async -> UIImage? {
+    func retrieveImage(url: URL?) async -> UIImage? {
+        guard let url = url else {
+            print("URL not found")
+            return nil
+        }
+        
         guard let cachePath = cachePath else {
             print("Cache path not found")
             return nil
@@ -60,7 +72,9 @@ import UIKit
         
         let fileManager = FileManager.default
         if let data = fileManager.contents(atPath: imagePath.path) {
-            return UIImage(data: data)
+            if let uiImage = UIImage(data: data) {
+                return uiImage
+            }
         }
         return nil
     }

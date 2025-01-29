@@ -24,9 +24,17 @@ class CachedAsyncImageViewModel: ObservableObject {
     
     func loadImage() async {
         self.phase = .empty
+        
+        if let image = await ImageCacheManager.shared.retrieveImage(url: url) {
+            self.phase = .success(Image(uiImage: image))
+            return
+        }
+        
         do {
-            let image:Image = try await ImageService().getImage(url: url)
-            self.phase = .success(image)
+            let image:UIImage = try await ImageService().getImage(url: url)
+            
+            await ImageCacheManager.shared.storeImage(url: url, image: image)
+            self.phase = .success(Image(uiImage: image))
         } catch {
             self.phase = .failure(error)
         }
