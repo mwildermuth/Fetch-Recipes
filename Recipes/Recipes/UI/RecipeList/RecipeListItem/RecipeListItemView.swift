@@ -16,7 +16,7 @@ struct RecipeListItemView: View {
     
     var body: some View {
         HStack() {
-            AsyncImage(url: viewModel.recipe.photoURLSmall) { phase in
+            CachedAsyncImageView(url: viewModel.recipe.photoURLSmall) { phase in
                 switch phase {
                 case .empty:
                     ProgressView()

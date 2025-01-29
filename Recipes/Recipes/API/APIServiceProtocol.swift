@@ -26,7 +26,11 @@ extension APIServiceProtocol {
         }
         
         do {
-            let (data, _) = try await URLSession.shared.data(from: url)
+            let (data, response) = try await URLSession.shared.data(from: url)
+            if let httpResponse = (response as? HTTPURLResponse)?.statusCode, httpResponse != 200 {
+                throw APIErrors.networkError(NSError(domain: "HTTP Error", code: httpResponse, userInfo: nil))
+            }
+            
             let decodedData = try JSONDecoder().decode(Model.self, from: data)
             return decodedData
         } catch let error as DecodingError {
