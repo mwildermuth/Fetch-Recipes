@@ -11,10 +11,10 @@ class RecipesMissingViewModel: ObservableObject {
     @Published var topImage: String
     @Published var title: String
     @Published var description: String
-    @Published var action: (() -> Void)?
-    @Published var actionImage: String?
+    @Published var action: () -> Void
+    @Published var actionImage: String
     
-    init(topImage: String, title: String, description: String, action: (() -> Void)? = nil, actionImage: String? = nil) {
+    init(topImage: String, title: String, description: String, action: @escaping () -> Void, actionImage: String) {
         self.topImage = topImage
         self.title = title
         self.description = description

@@ -28,19 +28,13 @@ struct RecipesMissingView: View {
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 30)
             
-            if let action = viewModel.action, let actionImage = viewModel.actionImage {
                 Button(action: {
-                    action()
+                    viewModel.action()
                 }) {
-                    Image(systemName: actionImage)
+                    Image(systemName: viewModel.actionImage)
                         .font(.system(size: 40))
                 }
-            }
         }
-        .padding()
-        .background(Color(.systemBackground))
-        .cornerRadius(12)
-        .shadow(radius: 10)
     }
 }
 

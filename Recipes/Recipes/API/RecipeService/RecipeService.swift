@@ -34,5 +34,4 @@ extension RecipeService {
         try await self.getRecipeList(urlString: "https://d3jbb8n5wk0qxi.cloudfront.net/recipes-malformed.json")
     }
 }
-
 #endif

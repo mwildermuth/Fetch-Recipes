@@ -23,13 +23,15 @@ struct RecipeListView: View {
                     self.errorView
                 case .loaded:
                     List(viewModel.recipes) { recipe in
-                        Text(recipe.name)
+                        RecipeListItemView(recipe: recipe)
+                            .listRowSeparator(.hidden)
                     }
                     .refreshable {
                         await self.viewModel.fetchRecipes()
                     }
                 }
             }
+            .frame(maxHeight: .infinity, alignment: .top)
             .navigationTitle("Recipes")
         }
         .task {
@@ -53,9 +55,15 @@ struct RecipeListView: View {
     
     var emptyView: some View {
         RecipesMissingView(viewModel: RecipesMissingViewModel(
-            topImage: "exclamationmark.triangle",
+            topImage: "tray",
             title: "No Recipes",
-            description: "You have no recipes."
+            description: "You have no recipes.",
+            action: {
+                Task {
+                    await self.viewModel.fetchWithLoadingState()
+                }
+            },
+            actionImage: "arrow.clockwise.circle"
         ))
     }
 }
