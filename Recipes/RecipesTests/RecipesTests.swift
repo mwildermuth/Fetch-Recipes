@@ -14,7 +14,7 @@ import UIKit
 struct ImageServiceTests {
     
     let imageService:ImageService = ImageService()
-    let url = URL(string: "https://d3jbb8n5wk0qxi.cloudfront.net/photos/b9ab0071-b281-4bee-b361-ec340d405320/small.jpg")!
+    let url = URL(string: "https://d3jbb8n5wk0qxi.cloudfront.net/photos/dd936646-8100-4a1c-b5ce-5f97adf30a42/small.jpg")!
     
     @Test("Test downloading an image") func downloadImage() async throws {
         let image = try await imageService.getImage(url: url)
@@ -29,12 +29,10 @@ struct ImageCacheManagerTests {
     let url = URL(string: "https://d3jbb8n5wk0qxi.cloudfront.net/photos/535dfe4e-5d61-4db6-ba8f-7a27b1214f5d/small.jpg")!
     let url2 = URL(string: "https://d3jbb8n5wk0qxi.cloudfront.net/photos/b9ab0071-b281-4bee-b361-ec340d405320/small.jpg")!
     let image:UIImage?
-    let image2:UIImage?
     
     init() async {
-        _ = await ImageCacheManager.shared.clearAll()
+        let _ = await ImageCacheManager.shared.clearAll()
         self.image = try? await imageService.getImage(url: url)
-        self.image2 = try? await imageService.getImage(url: url2)
     }
     
     @Test("Testing image storing and retrieval") func imageSavedAndRetrived() async throws {
@@ -42,8 +40,9 @@ struct ImageCacheManagerTests {
         #expect(imageStored == .stored)
         let cachedImage = await ImageCacheManager.shared.retrieveImage(url: url)
         #expect(cachedImage != nil)
-        let clearedAll = await ImageCacheManager.shared.clearAll()
-        #expect(clearedAll == true)
+        // Reset for the next test
+        let cleared = await ImageCacheManager.shared.clearImage(url: url)
+        #expect(cleared == true)
     }
     
     @Test("Testing image already stored") func imageAlreadyStored() async throws {
@@ -51,25 +50,26 @@ struct ImageCacheManagerTests {
         try #require(imageStored == .stored)
         let alreadyStored = await ImageCacheManager.shared.storeImage(url: url, image: image!)
         #expect(alreadyStored == .alreadyStored)
-        let clearedAll = await ImageCacheManager.shared.clearAll()
-        #expect(clearedAll == true)
+        // Reset for the next test
+        let cleared = await ImageCacheManager.shared.clearImage(url: url)
+        #expect(cleared == true)
     }
     
-    @Test("Testing image clearing") func imageClearing() async throws {
-        let imageStored = await ImageCacheManager.shared.storeImage(url: url2, image: image2!)
+    @Test("Testing image clearing of one item") func imageClearing() async throws {
+        let imageStored = await ImageCacheManager.shared.storeImage(url: url2, image: image!)
         try #require(imageStored == .stored)
         let cleared = await ImageCacheManager.shared.clearImage(url: url2)
         #expect(cleared == true)
         let image = await ImageCacheManager.shared.retrieveImage(url: url2)
         #expect(image == nil)
-        let cleardAll = await ImageCacheManager.shared.clearAll()
-        #expect(cleardAll == true)
     }
     
-    @Test("Testing image already stored") func imageClearingAll() async throws {
+    @Test("Testing image clearing all") func imageClearingAll() async throws {
+        let url = URL(string: "https://d3jbb8n5wk0qxi.cloudfront.net/photos/b6efe075-6982-4579-b8cf-013d2d1a461b/small.jpg")!
+        let url2 = URL(string: "https://d3jbb8n5wk0qxi.cloudfront.net/photos/ec1b84b1-2729-4547-99db-5e0b625c0356/small.jpg")!
         let imageStored = await ImageCacheManager.shared.storeImage(url: url, image: image!)
         try #require(imageStored == .stored)
-        let imageStored2 = await ImageCacheManager.shared.storeImage(url: url2, image: image2!)
+        let imageStored2 = await ImageCacheManager.shared.storeImage(url: url2, image: image!)
         try #require(imageStored2 == .stored)
         let cleared = await ImageCacheManager.shared.clearAll()
         #expect(cleared == true)
@@ -77,6 +77,7 @@ struct ImageCacheManagerTests {
         #expect(image == nil)
         let image2 = await ImageCacheManager.shared.retrieveImage(url: url2)
         #expect(image2 == nil)
+        // Reset for the next test
         let clearedAll = await ImageCacheManager.shared.clearAll()
         #expect(clearedAll == true)
     }
@@ -118,11 +119,11 @@ struct RecipeServiceTests {
     }
 }
 
-@Suite("Testing the Async Image View Model")
+@Suite("Testing the Async Image View Model", .serialized)
 struct CachedAsyncImageViewModelTests {
     
     @Test("Test that cache image placeholder phase") func asyncImagePlaceholder() async throws {
-        let url = URL(string: "https://d3jbb8n5wk0qxi.cloudfront.net/photos/b9ab0071-b281-4bee-b361-ec340d405320/small.jpg")!
+        let url = URL(string: "https://d3jbb8n5wk0qxi.cloudfront.net/photos/7276e9f9-02a2-47a0-8d70-d91bdb149e9e/small.jpg")!
         let viewModel = await CachedAsyncImageViewModel(url: url)
         switch await viewModel.phase {
             case .empty:
@@ -135,7 +136,7 @@ struct CachedAsyncImageViewModelTests {
     }
     
     @Test("Test that cache image returns successfully") func asyncImageSuccess() async throws {
-        let url = URL(string: "https://d3jbb8n5wk0qxi.cloudfront.net/photos/b9ab0071-b281-4bee-b361-ec340d405320/small.jpg")!
+        let url = URL(string: "https://d3jbb8n5wk0qxi.cloudfront.net/photos/7276e9f9-02a2-47a0-8d70-d91bdb149e9e/small.jpg")!
         let viewModel = await CachedAsyncImageViewModel(url: url)
         await viewModel.loadImage()
         switch await viewModel.phase {

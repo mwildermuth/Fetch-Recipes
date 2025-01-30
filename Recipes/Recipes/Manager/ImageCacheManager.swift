@@ -81,7 +81,6 @@ class ImageCacheManager {
             print("Image already exists: \(url.path)")
             return .alreadyStored
         }
-        
         return .stored
     }
     
