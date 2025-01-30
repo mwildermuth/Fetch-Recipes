@@ -42,6 +42,7 @@ struct RecipesMissingView: View {
     }
 }
 
+#if DEBUG
 #Preview {
     RecipesMissingView(viewModel: RecipesMissingViewModel(topImage: "tray", title: "No Recipes", description: "You have no available recipes.", action: {() in}, actionImage: "arrow.clockwise.circle"))
 }
@@ -49,5 +50,4 @@ struct RecipesMissingView: View {
 #Preview {
     RecipesMissingView(viewModel: RecipesMissingViewModel(topImage: "xmark.icloud", title: "Error", description: "Try reloading the recipes again.", action: {() in}, actionImage: "arrow.clockwise.circle"))
 }
-
-
+#endif

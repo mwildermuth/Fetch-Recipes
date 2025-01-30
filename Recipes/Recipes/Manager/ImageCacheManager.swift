@@ -9,9 +9,24 @@ import UIKit
 import SwiftUI
 
 /**
- * This class is responsible for storing and retrieving images from disk.  A global actor to ensure that only one operation is performed at a time and it can be used from any where in the app..
+ *  Define the global actor for the image cache, so it can be used throughout the app.
  */
-@globalActor actor ImageCacheManager {
+@globalActor actor ImageCacheActor {
+
+    static let shared = ImageCacheActor()
+}
+
+public enum CacheImageStoreState : Sendable {
+    case stored
+    case alreadyStored
+    case failedToStore
+}
+
+/**
+ * This class is responsible for storing and retrieving images from disk.  A global actor to ensure that only one operation is performed at a time and it can be used from any where in the app.
+ */
+@ImageCacheActor
+class ImageCacheManager {
     
     static let shared = ImageCacheManager()
     
@@ -41,16 +56,16 @@ import SwiftUI
     /**
      * A method to store an image to disk
      */
-    func storeImage(url: URL?, image: UIImage) async {
+    func storeImage(url: URL?, image: UIImage) async -> CacheImageStoreState {
         
         guard let url = url else {
             print("URL not found")
-            return
+            return .failedToStore
         }
         
         guard let cachePath = cachePath else {
             print("Cache path not found")
-            return
+            return .failedToStore
         }
         
         let imageFileName = self.getFilename(url: url)
@@ -60,10 +75,14 @@ import SwiftUI
         if fileManager.fileExists(atPath: imagePath.path) == false {
             if fileManager.createFile(atPath: imagePath.path, contents: image.jpegData(compressionQuality: 1.0)) == false {
                 print("Error saving image: \(url.path)")
+                return .failedToStore
             }
         } else {
             print("Image already exists: \(url.path)")
+            return .alreadyStored
         }
+        
+        return .stored
     }
     
     /**
@@ -97,5 +116,57 @@ import SwiftUI
      */
     fileprivate func getFilename(url: URL) -> String {
         return url.relativePath.replacingOccurrences(of: "/", with: "_")
+    }
+    
+    /**
+     * A method to delete a signle image from disk.
+     */
+    func clearImage(url: URL?) async -> Bool {
+        
+        guard let url = url else {
+            print("URL not found")
+            return false
+        }
+        
+        guard let cachePath = cachePath else {
+            print("Cache path not found")
+            return false
+        }
+        
+        let imageFileName = self.getFilename(url: url)
+        let imagePath = cachePath.appendingPathComponent(imageFileName)
+        
+        let fileManager = FileManager.default
+        do {
+            if fileManager.fileExists(atPath: imagePath.path) == true {
+                try fileManager.removeItem(atPath: imagePath.path)
+            }
+        } catch {
+            print("Error deleting image: \(url.path)")
+            return false
+        }
+        return true
+    }
+    
+    /**
+     * A method to clear all images from disk.
+     */
+    func clearAll() async -> Bool {
+        guard let cachePath = cachePath else {
+            print("Cache path not found")
+            return false
+        }
+        
+        let fileManager = FileManager.default
+        do {
+            let fileURLs = try fileManager.contentsOfDirectory(at: cachePath, includingPropertiesForKeys: nil)
+            for fileURL in fileURLs {
+                try fileManager.removeItem(at: fileURL)
+            }
+        } catch {
+            print("Error deleting all images: \(error.localizedDescription)")
+            return false
+        }
+        return true
     }
 }

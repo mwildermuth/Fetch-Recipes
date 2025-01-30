@@ -81,6 +81,7 @@ struct RecipeListItemView: View {
     }
 }
 
+#if DEBUG
 #Preview {
     
     let cuisine: String = "Malaysian"
@@ -93,4 +94,5 @@ struct RecipeListItemView: View {
     
     RecipeListItemView(recipe: RecipeModel(cuisine: cuisine, name: name, id: udid , photoURLLarge: largePhoto, photoURLSmall: smallPhoto, sourceURL: sourceURL, youtubeURL: youtubeURL))
 }
+#endif
 

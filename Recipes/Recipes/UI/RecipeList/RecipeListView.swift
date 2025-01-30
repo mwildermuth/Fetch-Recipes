@@ -102,6 +102,8 @@ struct RecipeListView: View {
     }
 }
 
+#if DEBUG
 #Preview {
     RecipeListView()
 }
+#endif

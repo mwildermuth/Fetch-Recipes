@@ -21,11 +21,16 @@ class RecipeListViewModel: ObservableObject {
     @Published var state: RecipeListViewStates = .loading
     @Published var recipes: [RecipeModel] = []
     @Published var filterOptions: [String]? = nil
+    fileprivate let recipeService: RecipeServiceProtocol
     
     // Hold all the recipes to filter on
     fileprivate var storedRecipes: RecipeListModel?
     // Used to represent the "All" cusisine filter option
     fileprivate var filterAllKey: String = "All"
+    
+    init(recipeService: RecipeServiceProtocol = RecipeService()) {
+        self.recipeService = recipeService
+    }
     
     /**
      * A method that fetches the recipes from the service. It is an async method because it calls an async method from the RecipeService.
@@ -33,7 +38,7 @@ class RecipeListViewModel: ObservableObject {
     func fetchRecipes() async {
         do {
             self.filterOptions = nil
-            let recipes:RecipeListModel = try await RecipeService().get()
+            let recipes:RecipeListModel = try await self.recipeService.get()
             if recipes.getAllRecipes().isEmpty {
                 self.state = .empty
             } else {

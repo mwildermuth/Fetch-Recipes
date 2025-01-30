@@ -19,6 +19,9 @@ enum APIErrors: Error {
 protocol APIServiceProtocol {
     associatedtype Model: Decodable
     
+    /**
+     * Protocol method for all API services to implement or use
+     */
     func get(urlString: String) async throws -> Model
 }
 
