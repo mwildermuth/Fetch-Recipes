@@ -19,6 +19,7 @@ class RecipeListViewModel: ObservableObject {
     @Published var recipes: [RecipeModel] = []
     @Published var filterOptions: [String]? = nil
     fileprivate var storedRecipes: RecipeListModel?
+    fileprivate var filterAllKey: String = "All"
     
     func fetchRecipes() async {
         do {
@@ -29,7 +30,7 @@ class RecipeListViewModel: ObservableObject {
                 self.storedRecipes = recipes
                 self.recipes = recipes.getAllRecipes()
                 self.filterOptions = recipes.getAllCuisines()
-                self.filterOptions?.insert("All", at: 0)
+                self.filterOptions?.insert(filterAllKey, at: 0)
                 self.state = .loaded
             }
         } catch {
@@ -45,7 +46,7 @@ class RecipeListViewModel: ObservableObject {
     
     func fitlerRecipes(cuisine: String) {
         if let storedRecipes = self.storedRecipes {
-            if cuisine == "All" {
+            if cuisine == filterAllKey {
                 self.recipes = storedRecipes.getAllRecipes()
             } else {
                 self.recipes = storedRecipes.getAllRecipesFromCuisine(cuisine: cuisine)
