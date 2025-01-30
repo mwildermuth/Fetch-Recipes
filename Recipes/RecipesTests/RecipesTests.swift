@@ -15,10 +15,20 @@ struct ImageServiceTests {
     
     let imageService:ImageService = ImageService()
     let url = URL(string: "https://d3jbb8n5wk0qxi.cloudfront.net/photos/dd936646-8100-4a1c-b5ce-5f97adf30a42/small.jpg")!
+    let failUrl = URL(string: "https://d3jbb8n5wk0qxi.cloudfront.net/photos/dd936646-8100-4a1c-b5ce-5f97adf30a42/failure.jpg")!
     
     @Test("Test downloading an image") func downloadImage() async throws {
         let image = try await imageService.getImage(url: url)
         #expect(image != nil)
+    }
+    
+    @Test("Test failing to download an image") func failDownloaingImage() async throws {
+        do {
+            let _ = try await imageService.getImage(url: failUrl)
+            #expect(Bool(false))
+        } catch {
+            #expect(Bool(true))
+        }
     }
 }
 
