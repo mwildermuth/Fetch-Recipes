@@ -21,6 +21,7 @@ protocol APIServiceProtocol {
     
 extension APIServiceProtocol {
     func get(urlString: String) async throws -> Model {
+        
         guard let url = URL(string: urlString) else {
             throw APIErrors.invalidURL
         }
@@ -35,6 +36,24 @@ extension APIServiceProtocol {
             return decodedData
         } catch let error as DecodingError {
             throw APIErrors.decodingError(error)
+        } catch {
+            throw APIErrors.networkError(error)
+        }
+    }
+    
+    func get(urlString: String) async throws -> Model where Model == Data {
+        
+        guard let url = URL(string: urlString) else {
+            throw APIErrors.invalidURL
+        }
+        
+        do {
+            let (data, response) = try await URLSession.shared.data(from: url)
+            if let httpResponse = (response as? HTTPURLResponse)?.statusCode, httpResponse != 200 {
+                throw APIErrors.networkError(NSError(domain: "HTTP Error", code: httpResponse, userInfo: nil))
+            }
+            
+            return data
         } catch {
             throw APIErrors.networkError(error)
         }

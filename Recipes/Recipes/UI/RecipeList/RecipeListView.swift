@@ -33,12 +33,33 @@ struct RecipeListView: View {
             }
             .frame(maxHeight: .infinity, alignment: .top)
             .navigationTitle("Recipes")
+            .navigationBarItems(trailing: navBarItem)
         }
         .task {
             await self.viewModel.fetchRecipes()
         }
     }
     
+    @ViewBuilder
+    var navBarItem: some View {
+        if let filterOptions = self.viewModel.filterOptions, filterOptions.isEmpty == false {
+            Menu {
+                ForEach(filterOptions, id: \.self) { option in
+                    Button(action: {
+                        self.viewModel.fitlerRecipes(cuisine: option)
+                    }) {
+                        Text(option)
+                    }
+                }
+            } label: {
+                Label("Filter", systemImage: "slider.horizontal.3")
+            }
+        } else {
+            EmptyView()
+        }
+    }
+    
+    @ViewBuilder
     var errorView: some View {
         RecipesMissingView(viewModel: RecipesMissingViewModel(
             topImage: "xmark.icloud",
@@ -53,6 +74,7 @@ struct RecipeListView: View {
         ))
     }
     
+    @ViewBuilder
     var emptyView: some View {
         RecipesMissingView(viewModel: RecipesMissingViewModel(
             topImage: "tray",

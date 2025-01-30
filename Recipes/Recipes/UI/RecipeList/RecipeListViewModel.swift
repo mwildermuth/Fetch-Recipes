@@ -17,14 +17,19 @@ enum RecipeListViewStates {
 class RecipeListViewModel: ObservableObject {
     @Published var state: RecipeListViewStates = .loading
     @Published var recipes: [RecipeModel] = []
+    @Published var filterOptions: [String]? = nil
+    fileprivate var storedRecipes: RecipeListModel?
     
     func fetchRecipes() async {
         do {
-            let recipes:[RecipeModel] = try await RecipeService().get()
-            if recipes.isEmpty {
+            let recipes:RecipeListModel = try await RecipeService().get()
+            if recipes.getAllRecipes().isEmpty {
                 self.state = .empty
             } else {
-                self.recipes = recipes
+                self.storedRecipes = recipes
+                self.recipes = recipes.getAllRecipes()
+                self.filterOptions = recipes.getAllCuisines()
+                self.filterOptions?.insert("All", at: 0)
                 self.state = .loaded
             }
         } catch {
@@ -33,7 +38,18 @@ class RecipeListViewModel: ObservableObject {
     }
     
     func fetchWithLoadingState() async {
+        self.filterOptions = nil
         self.state = .loading
         await self.fetchRecipes()
+    }
+    
+    func fitlerRecipes(cuisine: String) {
+        if let storedRecipes = self.storedRecipes {
+            if cuisine == "All" {
+                self.recipes = storedRecipes.getAllRecipes()
+            } else {
+                self.recipes = storedRecipes.getAllRecipesFromCuisine(cuisine: cuisine)
+            }
+        }
     }
 }

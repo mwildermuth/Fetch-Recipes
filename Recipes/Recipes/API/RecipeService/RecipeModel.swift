@@ -6,8 +6,21 @@
 //
 import Foundation
 
-struct RecipesModel: Decodable {
-    let recipes: [RecipeModel]
+struct RecipeListModel: Decodable {
+    private let recipes: [RecipeModel]
+    
+    func getAllRecipes() -> [RecipeModel] {
+        return self.recipes
+    }
+    
+    func getAllCuisines() -> [String] {
+        let uniqueCuisines = Set(self.recipes.map { $0.cuisine })
+        return Array(uniqueCuisines)
+    }
+    
+    func getAllRecipesFromCuisine(cuisine: String) -> [RecipeModel] {
+        return self.recipes.filter { $0.cuisine == cuisine }
+    }
 }
 
 struct RecipeModel: Decodable, Identifiable {

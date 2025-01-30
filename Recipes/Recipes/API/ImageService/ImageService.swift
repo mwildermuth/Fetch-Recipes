@@ -8,19 +8,16 @@ import Foundation
 import UIKit
 import SwiftUI
 
-class ImageService {
+class ImageService: APIServiceProtocol {
+    typealias Model = Data
+    
     func getImage(url: URL?) async throws -> UIImage {
         do {
-            guard let url = url else {
+            guard let urlString = url?.absoluteString else {
                 throw APIErrors.invalidURL
             }
-            
-            let (data, response) = try await URLSession.shared.data(from: url)
-            
-            if let httpResponse = (response as? HTTPURLResponse)?.statusCode, httpResponse != 200 {
-                throw APIErrors.networkError(NSError(domain: "HTTP Error", code: httpResponse, userInfo: nil))
-            }
-            
+            let data = try await self.get(urlString: urlString)
+                        
             if let uiImage = UIImage(data: data) {
                 return uiImage
             } else {
