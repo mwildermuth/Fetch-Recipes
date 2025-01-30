@@ -7,6 +7,9 @@
 
 import SwiftUI
 
+/**
+ * A view that displays a list of recipes.
+ */
 struct RecipeListView: View {
     
     @StateObject private var viewModel: RecipeListViewModel = RecipeListViewModel()
@@ -40,6 +43,9 @@ struct RecipeListView: View {
         }
     }
     
+    /**
+     * A view builder that creates a navigation bar item for filtering recipes.
+     */
     @ViewBuilder
     var navBarItem: some View {
         if let filterOptions = self.viewModel.filterOptions, filterOptions.isEmpty == false {
@@ -59,6 +65,9 @@ struct RecipeListView: View {
         }
     }
     
+    /**
+     * A view builder that creates the error state view
+     */
     @ViewBuilder
     var errorView: some View {
         RecipesMissingView(viewModel: RecipesMissingViewModel(
@@ -74,12 +83,15 @@ struct RecipeListView: View {
         ))
     }
     
+    /**
+     * A view builder that creates the empty state view
+     */
     @ViewBuilder
     var emptyView: some View {
         RecipesMissingView(viewModel: RecipesMissingViewModel(
             topImage: "tray",
             title: "No Recipes",
-            description: "You have no recipes.",
+            description: "You have no available recipes.",
             action: {
                 Task {
                     await self.viewModel.fetchWithLoadingState()

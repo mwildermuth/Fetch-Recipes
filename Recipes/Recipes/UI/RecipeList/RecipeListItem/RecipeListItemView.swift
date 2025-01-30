@@ -6,10 +6,16 @@
 //
 import SwiftUI
 
+/**
+ * A view that displays a single recipe item from a list
+ */
 struct RecipeListItemView: View {
     
     @StateObject var viewModel: RecipeListItemViewModel
         
+    /**
+     * Initializes the view with a recipe
+     */
     init(recipe: RecipeModel) {
         _viewModel = StateObject(wrappedValue: RecipeListItemViewModel(recipe: recipe))
     }
@@ -42,6 +48,7 @@ struct RecipeListItemView: View {
                     .font(.headline)
                 Text(viewModel.recipe.cuisine)
                     .font(.subheadline)
+                // Only show the external links if they exist
                 if viewModel.recipe.hasExternalURLs() {
                     VStack (alignment: .trailing) {
                         HStack {

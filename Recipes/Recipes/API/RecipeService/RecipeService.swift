@@ -6,13 +6,22 @@
 //
 import Foundation
 
+/**
+ * Service for fetching recipes from the API
+ */
 class RecipeService: APIServiceProtocol {
     typealias Model = RecipeListModel
     
+    /**
+     * A method to fetch the recipe list from the API
+     */
     public func get() async throws -> RecipeListModel {
         try await self.getRecipeList(urlString: "https://d3jbb8n5wk0qxi.cloudfront.net/recipes.json")
     }
     
+    /**
+     * Helper method to do the HTTP request and decode the response from a given URL
+     */
     private func getRecipeList(urlString: String) async throws -> RecipeListModel {
         do {
             let recipeList = try await self.get(urlString: urlString)
@@ -24,7 +33,9 @@ class RecipeService: APIServiceProtocol {
 }
 
 #if DEBUG
-// Used for mocking/testing
+/**
+ * Extension used for mocking/testing
+ */
 extension RecipeService {
     public func getEmpty() async throws -> RecipeListModel {
         try await self.getRecipeList(urlString: "https://d3jbb8n5wk0qxi.cloudfront.net/recipes-empty.json")

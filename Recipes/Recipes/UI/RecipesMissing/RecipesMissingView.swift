@@ -6,6 +6,9 @@
 //
 import SwiftUI
 
+/**
+ * A view that displays a message when no recipes are available.
+ */
 struct RecipesMissingView: View {
     @ObservedObject var viewModel: RecipesMissingViewModel
     
@@ -29,6 +32,7 @@ struct RecipesMissingView: View {
                 .padding(.horizontal, 30)
             
                 Button(action: {
+                    // Action is a callback to the view model from the parent view
                     viewModel.action()
                 }) {
                     Image(systemName: viewModel.actionImage)
@@ -37,4 +41,13 @@ struct RecipesMissingView: View {
         }
     }
 }
+
+#Preview {
+    RecipesMissingView(viewModel: RecipesMissingViewModel(topImage: "tray", title: "No Recipes", description: "You have no available recipes.", action: {() in}, actionImage: "arrow.clockwise.circle"))
+}
+
+#Preview {
+    RecipesMissingView(viewModel: RecipesMissingViewModel(topImage: "xmark.icloud", title: "Error", description: "Try reloading the recipes again.", action: {() in}, actionImage: "arrow.clockwise.circle"))
+}
+
 

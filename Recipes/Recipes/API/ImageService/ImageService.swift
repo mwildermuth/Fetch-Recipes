@@ -8,9 +8,15 @@ import Foundation
 import UIKit
 import SwiftUI
 
+/**
+ * A class used to fetch images from the network
+ */
 class ImageService: APIServiceProtocol {
     typealias Model = Data
     
+    /**
+     * A method to get an image from a URL
+     */
     func getImage(url: URL?) async throws -> UIImage {
         do {
             guard let urlString = url?.absoluteString else {

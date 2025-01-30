@@ -13,13 +13,23 @@ enum APIErrors: Error {
     case decodingError(Error)
 }
 
+/**
+ * Protocol for API Services
+ */
 protocol APIServiceProtocol {
     associatedtype Model: Decodable
     
     func get(urlString: String) async throws -> Model
 }
-    
+
+/**
+ * Extension defining default behavior for the protocols
+ */
 extension APIServiceProtocol {
+    
+    /**
+     * A method to do the HTTP request and decode the response from a given URL
+     */
     func get(urlString: String) async throws -> Model {
         
         guard let url = URL(string: urlString) else {
@@ -41,6 +51,9 @@ extension APIServiceProtocol {
         }
     }
     
+    /**
+     * A mthod to do the HTTP request and return the response as Data
+     */
     func get(urlString: String) async throws -> Model where Model == Data {
         
         guard let url = URL(string: urlString) else {

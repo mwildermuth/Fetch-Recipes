@@ -12,6 +12,9 @@ public enum CachedAsyncImagePhase : Sendable {
     case failure(any Error)
 }
 
+/**
+ * The viewmodel for the CachedAsyncImageView. This class is responsible for loading the image from the network and saving it to disk..  It also manages the state of the image loading process.  It is a MainActor. because it updates the UI.
+ */
 @MainActor
 class CachedAsyncImageViewModel: ObservableObject {
 

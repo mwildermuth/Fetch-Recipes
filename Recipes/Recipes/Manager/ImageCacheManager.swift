@@ -8,11 +8,18 @@
 import UIKit
 import SwiftUI
 
+/**
+ * This class is responsible for storing and retrieving images from disk.  A global actor to ensure that only one operation is performed at a time and it can be used from any where in the app..
+ */
 @globalActor actor ImageCacheManager {
+    
     static let shared = ImageCacheManager()
     
     fileprivate let cachePath: URL?
     
+    /**
+     * Initialize the ImageCacheManager, and create an image directory in the cache directory.
+     */
     init() {
         let fileManager = FileManager.default
         if let cachePath = fileManager.urls(for: .cachesDirectory, in: .userDomainMask).first {
@@ -31,6 +38,9 @@ import SwiftUI
         }
     }
     
+    /**
+     * A method to store an image to disk
+     */
     func storeImage(url: URL?, image: UIImage) async {
         
         guard let url = url else {
@@ -56,6 +66,9 @@ import SwiftUI
         }
     }
     
+    /**
+     * A method to retrieve an image from disk
+     */
     func retrieveImage(url: URL?) async -> UIImage? {
         guard let url = url else {
             print("URL not found")
@@ -79,6 +92,9 @@ import SwiftUI
         return nil
     }
     
+    /**
+     * A method to replace / in a path with _ to make a unique filename for the images from the URL path
+     */
     fileprivate func getFilename(url: URL) -> String {
         return url.relativePath.replacingOccurrences(of: "/", with: "_")
     }
