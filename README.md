@@ -73,5 +73,9 @@ Requirements met:
 - [x] SwiftUI / iOS 16.0+ support
 - [x] Malformed and Empty recipes handled
 
+### To Run The Project
+
+Download the codebase from GitHub and open the Recipes.xcworkspace and hit Buid/Run.
+
 ### Video (GIF)
 <img src="/demo.gif">
