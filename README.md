@@ -1,9 +1,5 @@
 # Fetch Recipes Take Home Assignment
 
-![Video Summary of Recipe App](/movie.mp4)
-![Screenshot of recipes loaded](/Recipes.png)
-![Screenshot of no recipes available](/No-Recipes.png)
-![Screenshot of maliformed recipe response](/Malformed-Recipes.png)
 ## Summary
 
 
@@ -19,3 +15,8 @@
 ### Weakest Part of the Project: What do you think is the weakest part of your project?
 
 ### Additional Information: Is there anything else we should know? Feel free to share any insights or constraints you encountered
+
+### Screenshots
+<img src="/Recipes.png" alt="Recipes Loaded" height="300">
+<img src="/No-Recipes.png" alt="Recipes not available" height="300">
+<img src="/Malformed-Recipes.png" alt="Recipe Issue" height="300">
