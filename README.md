@@ -17,14 +17,8 @@
 ### Additional Information: Is there anything else we should know? Feel free to share any insights or constraints you encountered
 
 ### Screenshots
-<div style="display: flex;">
-  <div style="margin-right: 10px;">
+<p float="left">
     <img src="/Recipes.png" alt="Recipes Loaded" height="400">
-  </div>
-  <div>
     <img src="/No-Recipes.png" alt="Recipes not available" height="400">
-  </div>
-  <div>
     <img src="/Malformed-Recipes.png" alt="Recipe Issue" height="400">
-  </div>
-</div>
+</p>
