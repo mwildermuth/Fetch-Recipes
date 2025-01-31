@@ -22,4 +22,4 @@
     <img src="/No-Recipes.png" alt="Recipes not available" height="400">
     <img src="/Malformed-Recipes.png" alt="Recipe Issue" height="400">
 </p>
-![Demo of the recipes app](/demo.gif)
+<img src="/demo.gif">
