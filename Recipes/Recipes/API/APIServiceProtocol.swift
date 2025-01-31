@@ -23,6 +23,7 @@ protocol APIServiceProtocol {
      * Protocol method for all API services to implement or use
      */
     func get(urlString: String) async throws -> Model
+    func makeRequest(url: URL) async throws -> (Data, URLResponse)
 }
 
 /**
@@ -40,7 +41,7 @@ extension APIServiceProtocol {
         }
         
         do {
-            let (data, response) = try await URLSession.shared.data(from: url)
+            let (data, response) = try await self.makeRequest(url: url)
             if let httpResponse = (response as? HTTPURLResponse)?.statusCode, httpResponse != 200 {
                 throw APIErrors.networkError(NSError(domain: "HTTP Error", code: httpResponse, userInfo: nil))
             }
@@ -64,7 +65,7 @@ extension APIServiceProtocol {
         }
         
         do {
-            let (data, response) = try await URLSession.shared.data(from: url)
+            let (data, response) = try await self.makeRequest(url: url)
             if let httpResponse = (response as? HTTPURLResponse)?.statusCode, httpResponse != 200 {
                 throw APIErrors.networkError(NSError(domain: "HTTP Error", code: httpResponse, userInfo: nil))
             }
@@ -73,5 +74,14 @@ extension APIServiceProtocol {
         } catch {
             throw APIErrors.networkError(error)
         }
+    }
+    
+    func defaultMakeRequest(url: URL) async throws -> (Data, URLResponse) {
+        return try await URLSession.shared.data(from: url)
+    }
+        
+    
+    func makeRequest(url: URL) async throws -> (Data, URLResponse) {
+        return try await defaultMakeRequest(url: url)
     }
 }

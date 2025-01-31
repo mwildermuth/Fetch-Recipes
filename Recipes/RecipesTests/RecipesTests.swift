@@ -10,28 +10,6 @@ import Foundation
 import UIKit
 @testable import Recipes
 
-@Suite("Testing the iamge downloading service")
-struct ImageServiceTests {
-    
-    let imageService:ImageService = ImageService()
-    let url = URL(string: "https://d3jbb8n5wk0qxi.cloudfront.net/photos/dd936646-8100-4a1c-b5ce-5f97adf30a42/small.jpg")!
-    let failUrl = URL(string: "https://d3jbb8n5wk0qxi.cloudfront.net/photos/dd936646-8100-4a1c-b5ce-5f97adf30a42/failure.jpg")!
-    
-    @Test("Test downloading an image") func downloadImage() async throws {
-        let image = try await imageService.getImage(url: url)
-        #expect(image != nil)
-    }
-    
-    @Test("Test failing to download an image") func failDownloaingImage() async throws {
-        do {
-            let _ = try await imageService.getImage(url: failUrl)
-            #expect(Bool(false))
-        } catch {
-            #expect(Bool(true))
-        }
-    }
-}
-
 @Suite("Testing the image to disk caching service", .serialized)
 struct ImageCacheManagerTests {
     
@@ -42,7 +20,7 @@ struct ImageCacheManagerTests {
     
     init() async {
         let _ = await ImageCacheManager.shared.clearAll()
-        self.image = try? await imageService.getImage(url: url)
+        self.image = UIImage(named: "small.jpg")
     }
     
     @Test("Testing image storing and retrieval") func imageSavedAndRetrived() async throws {
@@ -129,6 +107,90 @@ struct RecipeServiceTests {
     }
 }
 
+@Suite("Testing the Recipe List View Model")
+struct RecipeListViewModelTests {
+    
+    @Test("Test that receipes are loaded") func loadRecipes() async throws {
+        let viewModel = await RecipeListViewModel(recipeService: MockRecipeService())
+        await viewModel.fetchRecipes()
+        #expect(await viewModel.recipes.count > 0)
+    }
+    
+    @Test("Test that we start in a loading state") func loadingState() async throws {
+        let viewModel = await RecipeListViewModel(recipeService: MockRecipeService())
+        #expect(await viewModel.state == .loading)
+    }
+    
+    @Test("Test that we transition to a loaded state") func loadedState() async throws {
+        let viewModel = await RecipeListViewModel(recipeService: MockRecipeService())
+        await viewModel.fetchRecipes()
+        #expect(await viewModel.state == .loaded)
+    }
+    
+    @Test("Test that we transition to a error state") func failedState() async throws {
+        let viewModel = await RecipeListViewModel(recipeService: MockRecipeServiceMaliformed())
+        await viewModel.fetchRecipes()
+        #expect(await viewModel.state == .error)
+    }
+    
+    @Test("Test that we transition to a empty state") func emptyState() async throws {
+        let viewModel = await RecipeListViewModel(recipeService: MockRecipeServiceEmpty())
+        await viewModel.fetchRecipes()
+        #expect(await viewModel.state == .empty)
+    }
+    
+    @Test("Test that filter options are loaded") func loadFilterOptions() async throws {
+        let viewModel = await RecipeListViewModel(recipeService: MockRecipeService())
+        await viewModel.fetchRecipes()
+        #expect(await viewModel.filterOptions!.count > 0)
+    }
+    
+    @Test("Test refresh (pull down to refresh) to loaded") func refreshStateToLoaded() async throws {
+        let viewModel = await RecipeListViewModel(recipeService: MockRecipeService())
+        await viewModel.fetchRecipes()
+        try #require(await viewModel.state == .loaded)
+        await viewModel.fetchWithLoadingState()
+        #expect(await viewModel.state == .loaded)
+    }
+    
+    @Test("Test that we have only filtered options") func filterOptions() async throws {
+        let testCuisine = "Malaysian"
+        let viewModel = await RecipeListViewModel(recipeService: MockRecipeService())
+        await viewModel.fetchRecipes()
+        await viewModel.fitlerRecipes(cuisine: testCuisine)
+        let filteredRecipes = await viewModel.recipes
+        try #require(filteredRecipes.count > 0)
+        for recipe in filteredRecipes {
+            if recipe.cuisine != testCuisine {
+                #expect(Bool(false))
+            }
+        }
+        #expect(Bool(true))
+    }
+}
+
+@Suite("Testing the iamge downloading service")
+struct ImageServiceTests {
+    
+    let imageService:ImageService = ImageService()
+    let url = URL(string: "https://d3jbb8n5wk0qxi.cloudfront.net/photos/dd936646-8100-4a1c-b5ce-5f97adf30a42/small.jpg")!
+    let failUrl = URL(string: "https://d3jbb8n5wk0qxi.cloudfront.net/photos/dd936646-8100-4a1c-b5ce-5f97adf30a42/failure.jpg")!
+    
+    @Test("Test downloading an image") func downloadImage() async throws {
+        let image = try await imageService.getImage(url: url)
+        #expect(image != nil)
+    }
+    
+    @Test("Test failing to download an image") func failDownloaingImage() async throws {
+        do {
+            let _ = try await imageService.getImage(url: failUrl)
+            #expect(Bool(false))
+        } catch {
+            #expect(Bool(true))
+        }
+    }
+}
+
 @Suite("Testing the Async Image View Model", .serialized)
 struct CachedAsyncImageViewModelTests {
     
@@ -173,66 +235,3 @@ struct CachedAsyncImageViewModelTests {
         }
     }
 }
-
-@Suite("Testing the Recipe List View Model")
-struct RecipeListViewModelTests {
-    
-    @Test("Test that receipes are loaded") func loadRecipes() async throws {
-        let viewModel = await RecipeListViewModel()
-        await viewModel.fetchRecipes()
-        #expect(await viewModel.recipes.count > 0)
-    }
-    
-    @Test("Test that we start in a loading state") func loadingState() async throws {
-        let viewModel = await RecipeListViewModel()
-        #expect(await viewModel.state == .loading)
-    }
-    
-    @Test("Test that we transition to a loaded state") func loadedState() async throws {
-        let viewModel = await RecipeListViewModel()
-        await viewModel.fetchRecipes()
-        #expect(await viewModel.state == .loaded)
-    }
-    
-    @Test("Test that we transition to a error state") func failedState() async throws {
-        let viewModel = await RecipeListViewModel(recipeService: MockRecipeServiceMaliformed())
-        await viewModel.fetchRecipes()
-        #expect(await viewModel.state == .error)
-    }
-    
-    @Test("Test that we transition to a empty state") func emptyState() async throws {
-        let viewModel = await RecipeListViewModel(recipeService: MockRecipeServiceEmpty())
-        await viewModel.fetchRecipes()
-        #expect(await viewModel.state == .empty)
-    }
-    
-    @Test("Test that filter options are loaded") func loadFilterOptions() async throws {
-        let viewModel = await RecipeListViewModel()
-        await viewModel.fetchRecipes()
-        #expect(await viewModel.filterOptions!.count > 0)
-    }
-    
-    @Test("Test refresh (pull down to refresh) to loaded") func refreshStateToLoaded() async throws {
-        let viewModel = await RecipeListViewModel()
-        await viewModel.fetchRecipes()
-        try #require(await viewModel.state == .loaded)
-        await viewModel.fetchWithLoadingState()
-        #expect(await viewModel.state == .loaded)
-    }
-    
-    @Test("Test that we have only filtered options") func filterOptions() async throws {
-        let testCuisine = "Malaysian"
-        let viewModel = await RecipeListViewModel()
-        await viewModel.fetchRecipes()
-        await viewModel.fitlerRecipes(cuisine: testCuisine)
-        let filteredRecipes = await viewModel.recipes
-        try #require(filteredRecipes.count > 0)
-        for recipe in filteredRecipes {
-            if recipe.cuisine != testCuisine {
-                #expect(Bool(false))
-            }
-        }
-        #expect(Bool(true))
-    }
-}
-

@@ -13,6 +13,13 @@ struct RecipeListModel: Decodable {
     private let recipes: [RecipeModel]
     
     /**
+     * A initializer to create a new instance of the RecipeListModel.
+     */
+    init(recipes: [RecipeModel] = []) {
+        self.recipes = recipes
+    }
+    
+    /**
      * A method to get all recipes.
      */
     func getAllRecipes() -> [RecipeModel] {
